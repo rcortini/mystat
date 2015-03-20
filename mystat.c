@@ -16,6 +16,7 @@ void print_usage () {
   printf ("\tlinear_fit\n");
   printf ("\tweighted_linear_fit\n");
   printf ("\tpolynomial_fit\n");
+  printf ("\tblock_average <nblocks>\n");
   printf ("Options:\n");
   printf ("\t-h : Print this help and exit\n");
   printf ("\t-v : Verbose\n");
@@ -240,6 +241,36 @@ int main (int argc, char *argv[]) {
     free (data[1]);
     free (data);
     multifit_results_free (fit_results);
+  }
+  else if (strcmp (command, "block_average")==0) {
+    unsigned int argstart=optind+2;
+    double *data;
+    unsigned int N, nblocks;
+    block_average_results *ba_results;
+
+    /* get input parameters */
+    if (argc-optind < 3) {
+      err_message ("Insufficient arguments for block averaging\n");
+      print_usage ();
+      exit (EXIT_FAILURE);
+    }
+    nblocks = atoi (argv [argstart]);
+
+    /* allocate memory */
+    ba_results = block_average_results_alloc (nblocks);
+
+    /* read data */
+    N = read_data_single_col (f_in, col, &data);
+
+    /* do the block averaging */
+    retcode = block_average (N, data, nblocks, ba_results);
+
+    /* print results */
+    print_block_average_results (ba_results, vflag);
+
+    /* success */
+    free (data);
+    block_average_results_free (ba_results);
   }
   else {
     err_message ("Invalid command '%s'\n", command);
