@@ -30,7 +30,7 @@ clean :
 	$(RM_F) $(program_objects) $(program)
 
 # install
-install :
+install : $(program)
 	cp $(program) ${SOFT_DIR}/bin
 
 # tarball
