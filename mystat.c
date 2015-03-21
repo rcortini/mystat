@@ -287,6 +287,16 @@ int main (int argc, char *argv[]) {
     free (data);
     free (fft_results);
   }
+  else if (strcmp (command, "psd")==0) {
+    double *data, *psd_results;
+    unsigned int i, N = read_data_single_col (f_in, col, &data);
+    psd_results = (double *) malloc (N*sizeof (double));
+    retcode = psd (N, data, psd_results);
+    for (i=0; i<N; i++)
+      printf ("%f\n", psd_results [i]);
+    free (psd_results);
+    free (data);
+  }
   else {
     err_message ("Invalid command '%s'\n", command);
     print_usage ();
