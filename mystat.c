@@ -297,6 +297,16 @@ int main (int argc, char *argv[]) {
     free (psd_results);
     free (data);
   }
+  else if (strcmp (command, "correlation")==0) {
+    double *data, *corr;
+    unsigned int i, N = read_data_single_col (f_in, col, &data);
+    corr = (double *) malloc (N*sizeof (double));
+    retcode = correlation (N, data, corr);
+    for (i=0; i<N; i++)
+      printf ("%f\n", corr [i]);
+    free (corr);
+    free (data);
+  }
   else {
     err_message ("Invalid command '%s'\n", command);
     print_usage ();
