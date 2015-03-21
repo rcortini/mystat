@@ -272,6 +272,21 @@ int main (int argc, char *argv[]) {
     free (data);
     block_average_results_free (ba_results);
   }
+  else if (strcmp (command, "fft")==0) {
+    double *data, *fft_results;
+    unsigned int N = read_data_single_col (f_in, col, &data);
+    fft_results = (double *) malloc (N*sizeof (double));
+
+    /* perform the fft */
+    retcode = fft (N, data, fft_results);
+
+    /* print results */
+    print_fft_results (N, fft_results, vflag);
+
+    /* free memory */
+    free (data);
+    free (fft_results);
+  }
   else {
     err_message ("Invalid command '%s'\n", command);
     print_usage ();
