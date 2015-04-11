@@ -17,6 +17,9 @@ void print_usage () {
   printf ("\tweighted_linear_fit\n");
   printf ("\tpolynomial_fit\n");
   printf ("\tblock_average <nblocks>\n");
+  printf ("\tfft\n");
+  printf ("\tpsd\n");
+  printf ("\tcorrelation\n");
   printf ("Options:\n");
   printf ("\t-h : Print this help and exit\n");
   printf ("\t-v : Verbose\n");
@@ -300,10 +303,10 @@ int main (int argc, char *argv[]) {
   else if (strcmp (command, "correlation")==0) {
     double *data, *corr;
     unsigned int i, N = read_data_single_col (f_in, col, &data);
-    corr = (double *) malloc (N*sizeof (double));
+    corr = (double *) malloc (2*N*sizeof (double));
     retcode = correlation (N, data, corr);
-    for (i=0; i<N; i++)
-      printf ("%f\n", corr [i]);
+    for (i=0; i<N/2; i++)
+      printf ("%f\n", corr [2*i]);
     free (corr);
     free (data);
   }
