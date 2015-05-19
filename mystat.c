@@ -27,8 +27,8 @@ void print_usage () {
 }
 
 int main (int argc, char *argv[]) {
-  int c, vflag = 0;
-  unsigned int col = 0;
+  int c, cflag = 0, vflag = 0;
+  unsigned int ncols, *cols;
   unsigned int retcode;
   char *filename, *command;
   FILE *f_in;
@@ -46,11 +46,8 @@ int main (int argc, char *argv[]) {
 	vflag = 1;
 	break;
       case 'c' :
-	col = atoi (optarg);
-	if (col<1) {
-	  err_message ("Column numbers start from 1!\n");
-	  exit (EXIT_FAILURE);
-	}
+	cflag = 1;
+	ncols = parse_ranges (optarg, &cols);
 	break;
       default :
 	err_message ("Incorrect usage\n");
@@ -58,6 +55,13 @@ int main (int argc, char *argv[]) {
 	exit (EXIT_FAILURE);
     }
   };
+
+  /* if columns were not specified, set defaults */
+  if (!cflag) {
+    ncols = 1;
+    cols = (unsigned int *) malloc (sizeof (unsigned int));
+    cols [0] = 0;
+  }
 
   /* check for proper invocation */
   if (argc-optind < 2) {
@@ -80,7 +84,7 @@ int main (int argc, char *argv[]) {
   if (strcmp (command, "average_variance")==0) {
     double av, var;
     double **data;
-    unsigned int N = read_data (f_in, 1, &col, &data);
+    unsigned int N = read_data (f_in, 1, cols, &data);
     retcode = average_variance (N, *data, &av, &var);
     log_message ("average = %.8e, variance = %.8e\n", av, var);
     free (*data);
@@ -89,7 +93,7 @@ int main (int argc, char *argv[]) {
   else if (strcmp (command, "average_devst")==0) {
     double av, ds;
     double **data;
-    unsigned int N = read_data (f_in, 1, &col, &data);
+    unsigned int N = read_data (f_in, 1, cols, &data);
     retcode = average_devst (N, *data, &av, &ds);
     log_message ("average = %.8e, standard deviation = %.8e\n", av, ds);
     free (*data);
@@ -98,7 +102,7 @@ int main (int argc, char *argv[]) {
   else if (strcmp (command, "average")==0) {
     double av;
     double **data;
-    unsigned int N = read_data (f_in, 1, &col, &data);
+    unsigned int N = read_data (f_in, 1, cols, &data);
     retcode = average (N, *data, &av);
     log_message ("average = %.8e\n", av);
     free (*data);
@@ -107,7 +111,7 @@ int main (int argc, char *argv[]) {
   else if (strcmp (command, "devst")==0) {
     double ds;
     double **data;
-    unsigned int N = read_data (f_in, 1, &col, &data);
+    unsigned int N = read_data (f_in, 1, cols, &data);
     retcode = devst (N, *data, &ds);
     log_message ("standard deviation = %.8e\n", ds);
     free (*data);
@@ -116,7 +120,7 @@ int main (int argc, char *argv[]) {
   else if (strcmp (command, "variance")==0) {
     double var;
     double **data;
-    unsigned int N = read_data (f_in, 1, &col, &data);
+    unsigned int N = read_data (f_in, 1, cols, &data);
     retcode = variance (N, *data, &var);
     log_message ("variance = %.8e\n", var);
     free (*data);
@@ -140,7 +144,7 @@ int main (int argc, char *argv[]) {
     nbins = atoi (argv [argstart+2]);
 
     /* read data */
-    N = read_data (f_in, 1, &col, &data);
+    N = read_data (f_in, 1, cols, &data);
 
     /* calculate histogram */
     retcode = histogram (N, *data, nbins, bin_min, bin_max, &hist);
@@ -167,14 +171,15 @@ int main (int argc, char *argv[]) {
   }
   else if (strcmp (command, "weighted_linear_fit")==0) {
     double **data;
-    unsigned int i, N, cols [3];
+    unsigned int i, N;
     double *w, *x, *y;
     linear_fit_results fit_results;
 
-    /* TODO: fix */
-    cols [0] = col;
-    cols [1] = col+1;
-    cols [2] = col+2;
+    /* check that we have a sufficient number of columns */
+    if (ncols < 3) {
+      err_message ("Insufficient number of columns: 3 needed, %u given\n", ncols);
+      exit (EXIT_FAILURE);
+    }
 
     N = read_data (f_in, 3, cols, &data);
     w = (double *) malloc (N*sizeof (double));
@@ -207,14 +212,15 @@ int main (int argc, char *argv[]) {
   }
   else if (strcmp (command, "linear_fit")==0) {
     double **data;
-    unsigned int N, cols [3];
+    unsigned int N;
     double *x, *y;
     linear_fit_results fit_results;
 
-    /* TODO */
-    cols [0] = col;
-    cols [1] = col+1;
-    cols [2] = col+2;
+    /* check that we have a sufficient number of columns */
+    if (ncols < 2) {
+      err_message ("Insufficient number of columns: 2 needed, %u given\n", ncols);
+      exit (EXIT_FAILURE);
+    }
 
     N = read_data (f_in, 2, cols, &data);
     x = data[0];
@@ -233,7 +239,7 @@ int main (int argc, char *argv[]) {
     free (data);
   }
   else if (strcmp (command, "polynomial_fit")==0) {
-    unsigned int N, degree, argstart=optind+2, cols[2];
+    unsigned int N, degree, argstart=optind+2;
     double **data;
     double *x, *y;
     double x0;
@@ -249,9 +255,11 @@ int main (int argc, char *argv[]) {
     degree = atoi (argv [argstart+1]);
     fit_results = multifit_results_alloc (degree);
 
-    /* TODO */
-    cols [0] = col;
-    cols [1] = col+1;
+    /* check that we have a sufficient number of columns */
+    if (ncols < 2) {
+      err_message ("Insufficient number of columns: 2 needed, %u given\n", ncols);
+      exit (EXIT_FAILURE);
+    }
 
     /* read data from input */
     N = read_data (f_in, 2, cols, &data);
@@ -289,7 +297,7 @@ int main (int argc, char *argv[]) {
     ba_results = block_average_results_alloc (nblocks);
 
     /* read data */
-    N = read_data (f_in, 1, &col, &data);
+    N = read_data (f_in, 1, cols, &data);
 
     /* do the block averaging */
     retcode = block_average (N, *data, nblocks, ba_results);
@@ -304,7 +312,7 @@ int main (int argc, char *argv[]) {
   }
   else if (strcmp (command, "fft")==0) {
     double **data, *fft_results;
-    unsigned int N = read_data (f_in, 1, &col, &data);
+    unsigned int N = read_data (f_in, 1, cols, &data);
     fft_results = (double *) malloc (N*sizeof (double));
 
     /* perform the fft */
@@ -320,7 +328,7 @@ int main (int argc, char *argv[]) {
   }
   else if (strcmp (command, "psd")==0) {
     double **data, *psd_results;
-    unsigned int i, N = read_data (f_in, 1, &col, &data);
+    unsigned int i, N = read_data (f_in, 1, cols, &data);
     psd_results = (double *) malloc (N*sizeof (double));
     retcode = psd (N, *data, psd_results);
     for (i=0; i<N; i++)
@@ -331,7 +339,7 @@ int main (int argc, char *argv[]) {
   }
   else if (strcmp (command, "correlation")==0) {
     double **data, *corr;
-    unsigned int i, N = read_data (f_in, 1, &col, &data);
+    unsigned int i, N = read_data (f_in, 1, cols, &data);
     corr = (double *) malloc (2*N*sizeof (double));
     retcode = correlation (N, *data, corr);
     for (i=0; i<N/2; i++)
