@@ -93,7 +93,10 @@ int main (int argc, char *argv[]) {
     init_cols (cflag, 1, &cols);
     N = read_data (f_in, 1, cols, &data);
     retcode = average_variance (N, *data, &av, &var);
-    log_message ("average = %.8e, variance = %.8e\n", av, var);
+    if (vflag)
+      log_message ("average = %.8e, variance = %.8e\n", av, var);
+    else
+      printf ("%.8e %.8e\n", av, var);
     free (*data);
     free (data);
   }
@@ -105,7 +108,10 @@ int main (int argc, char *argv[]) {
     init_cols (cflag, 1, &cols);
     N = read_data (f_in, 1, cols, &data);
     retcode = average_devst (N, *data, &av, &ds);
-    log_message ("average = %.8e, standard deviation = %.8e\n", av, ds);
+    if (vflag)
+      log_message ("average = %.8e, standard deviation = %.8e\n", av, ds);
+    else
+      printf ("%.8e %.8e\n", av, ds);
     free (*data);
     free (data);
   }
@@ -117,7 +123,10 @@ int main (int argc, char *argv[]) {
     init_cols (cflag, 1, &cols);
     N = read_data (f_in, 1, cols, &data);
     retcode = average (N, *data, &av);
-    log_message ("average = %.8e\n", av);
+    if (vflag)
+      log_message ("average = %.8e\n", av);
+    else
+      printf ("%.8e\n", av);
     free (*data);
     free (data);
   }
@@ -129,7 +138,10 @@ int main (int argc, char *argv[]) {
     init_cols (cflag, 1, &cols);
     N = read_data (f_in, 1, cols, &data);
     retcode = devst (N, *data, &ds);
-    log_message ("standard deviation = %.8e\n", ds);
+    if (vflag)
+      log_message ("standard deviation = %.8e\n", ds);
+    else
+      printf ("%.8e\n", ds);
     free (*data);
     free (data);
   }
@@ -141,7 +153,10 @@ int main (int argc, char *argv[]) {
     init_cols (cflag, 1, &cols);
     N = read_data (f_in, 1, cols, &data);
     retcode = variance (N, *data, &var);
-    log_message ("variance = %.8e\n", var);
+    if (vflag)
+      log_message ("variance = %.8e\n", var);
+    else
+      printf ("%.8e\n", var);
     free (*data);
     free (data);
   }
