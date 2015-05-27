@@ -98,9 +98,9 @@ int main (int argc, char *argv[]) {
       printf ("%.8e %.8e ", av, var);
       if (retcode)
 	break;
+      free (data [i]);
     }
     printf ("\n");
-    free (*data);
     free (data);
   }
   else if (strcmp (command, "average_devst")==0) {
@@ -116,9 +116,9 @@ int main (int argc, char *argv[]) {
       printf ("%.8e %.8e ", av, ds);
       if (retcode)
 	break;
+      free (data [i]);
     }
     printf ("\n");
-    free (*data);
     free (data);
   }
   else if (strcmp (command, "average")==0) {
@@ -134,9 +134,9 @@ int main (int argc, char *argv[]) {
       printf ("%.8e ", av);
       if (retcode)
 	break;
+      free (data [i]);
     }
     printf ("\n");
-    free (*data);
     free (data);
   }
   else if (strcmp (command, "devst")==0) {
@@ -152,9 +152,9 @@ int main (int argc, char *argv[]) {
       printf ("%.8e ", ds);
       if (retcode)
 	break;
+      free (data [i]);
     }
     printf ("\n");
-    free (*data);
     free (data);
   }
   else if (strcmp (command, "variance")==0) {
@@ -166,13 +166,13 @@ int main (int argc, char *argv[]) {
     if (!cflag) ncols = 1;
     N = read_data (f_in, ncols, cols, &data);
     for (i=0; i<ncols; i++) {
-      retcode = variance (N, *data, &var);
-      log_message ("%.8e ", var);
+      retcode = variance (N, data [i], &var);
+      printf ("%.8e ", var);
       if (retcode)
 	break;
+      free (data [i]);
     }
     printf ("\n");
-    free (*data);
     free (data);
   }
   else if (strcmp (command, "histogram")==0) {
