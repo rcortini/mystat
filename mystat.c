@@ -86,77 +86,92 @@ int main (int argc, char *argv[]) {
 
   /* now check what is the command and act */
   if (strcmp (command, "average_variance")==0) {
-    double av, var;
     double **data;
-    unsigned int N;
+    unsigned int i, N;
 
     init_cols (cflag, 1, &cols);
-    N = read_data (f_in, 1, cols, &data);
-    retcode = average_variance (N, *data, &av, &var);
-    if (vflag)
-      log_message ("average = %.8e, variance = %.8e\n", av, var);
-    else
-      printf ("%.8e %.8e\n", av, var);
+    if (!cflag) ncols = 1;
+    N = read_data (f_in, ncols, cols, &data);
+    for (i=0; i<ncols; i++) {
+      double av, var;
+      retcode = average_variance (N, data [i], &av, &var);
+      printf ("%.8e %.8e ", av, var);
+      if (retcode)
+	break;
+    }
+    printf ("\n");
     free (*data);
     free (data);
   }
   else if (strcmp (command, "average_devst")==0) {
     double av, ds;
     double **data;
-    unsigned int N;
+    unsigned int i, N;
 
     init_cols (cflag, 1, &cols);
-    N = read_data (f_in, 1, cols, &data);
-    retcode = average_devst (N, *data, &av, &ds);
-    if (vflag)
-      log_message ("average = %.8e, standard deviation = %.8e\n", av, ds);
-    else
-      printf ("%.8e %.8e\n", av, ds);
+    if (!cflag) ncols = 1;
+    N = read_data (f_in, ncols, cols, &data);
+    for (i=0; i<ncols; i++) {
+      retcode = average_devst (N, data [i], &av, &ds);
+      printf ("%.8e %.8e ", av, ds);
+      if (retcode)
+	break;
+    }
+    printf ("\n");
     free (*data);
     free (data);
   }
   else if (strcmp (command, "average")==0) {
     double av;
     double **data;
-    unsigned int N;
+    unsigned int i, N;
 
     init_cols (cflag, 1, &cols);
-    N = read_data (f_in, 1, cols, &data);
-    retcode = average (N, *data, &av);
-    if (vflag)
-      log_message ("average = %.8e\n", av);
-    else
-      printf ("%.8e\n", av);
+    if (!cflag) ncols = 1;
+    N = read_data (f_in, ncols, cols, &data);
+    for (i=0; i<ncols; i++) {
+      retcode = average (N, data [i], &av);
+      printf ("%.8e ", av);
+      if (retcode)
+	break;
+    }
+    printf ("\n");
     free (*data);
     free (data);
   }
   else if (strcmp (command, "devst")==0) {
     double ds;
     double **data;
-    unsigned int N;
+    unsigned int i, N;
 
     init_cols (cflag, 1, &cols);
-    N = read_data (f_in, 1, cols, &data);
-    retcode = devst (N, *data, &ds);
-    if (vflag)
-      log_message ("standard deviation = %.8e\n", ds);
-    else
-      printf ("%.8e\n", ds);
+    if (!cflag) ncols = 1;
+    N = read_data (f_in, ncols, cols, &data);
+    for (i=0; i<ncols; i++) {
+      retcode = devst (N, data [i], &ds);
+      printf ("%.8e ", ds);
+      if (retcode)
+	break;
+    }
+    printf ("\n");
     free (*data);
     free (data);
   }
   else if (strcmp (command, "variance")==0) {
     double var;
     double **data;
-    unsigned int N;
+    unsigned int i, N;
 
     init_cols (cflag, 1, &cols);
-    N = read_data (f_in, 1, cols, &data);
-    retcode = variance (N, *data, &var);
-    if (vflag)
-      log_message ("variance = %.8e\n", var);
-    else
-      printf ("%.8e\n", var);
+    if (!cflag) ncols = 1;
+    N = read_data (f_in, ncols, cols, &data);
+    for (i=0; i<ncols; i++) {
+      retcode = variance (N, *data, &var);
+      log_message ("%.8e ", var);
+      if (retcode)
+	break;
+    }
+    printf ("\n");
     free (*data);
     free (data);
   }
