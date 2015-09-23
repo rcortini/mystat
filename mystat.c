@@ -8,7 +8,7 @@ const char *program_name = "mystat";
 void init_cols (const int cflag, const size_t ncols, size_t **cols) {
   if (!cflag) {
     unsigned int i;
-    *cols = (size_t *) malloc (ncols*sizeof (unsigned int));
+    *cols = (size_t *) malloc (ncols*sizeof (size_t));
     for (i=0; i<ncols; i++)
       (*cols) [i] = i;
   }
@@ -373,7 +373,7 @@ int main (int argc, char *argv[]) {
     /* read data */
     init_cols (cflag, 1, &cols);
     N = read_data (f_in, 1, cols, &data);
-    fft_results = (double *) malloc (N*sizeof (double));
+    fft_results = (double *) malloc (2*N*sizeof (double));
 
     /* perform the fft */
     retcode = fft (N, *data, fft_results);
@@ -397,7 +397,7 @@ int main (int argc, char *argv[]) {
 
     retcode = psd (N, *data, psd_results);
     for (i=0; i<N; i++)
-      printf ("%f\n", psd_results [i]);
+      printf ("%.8e\n", psd_results [i]);
     free (psd_results);
     free (*data);
     free (data);
@@ -412,7 +412,7 @@ int main (int argc, char *argv[]) {
     corr = (double *) malloc (2*N*sizeof (double));
     retcode = correlation (N, *data, corr);
     for (i=0; i<N/2; i++)
-      printf ("%f\n", corr [2*i]);
+      printf ("%.8e\n", corr [2*i]);
     free (corr);
     free (*data);
     free (data);
