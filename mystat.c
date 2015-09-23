@@ -5,10 +5,10 @@
 const char *program_name = "mystat";
 
 /* if columns were not specified, set defaults */
-void init_cols (const int cflag, const unsigned int ncols, unsigned int **cols) {
+void init_cols (const int cflag, const size_t ncols, size_t **cols) {
   if (!cflag) {
     unsigned int i;
-    *cols = (unsigned int *) malloc (ncols*sizeof (unsigned int));
+    *cols = (size_t *) malloc (ncols*sizeof (unsigned int));
     for (i=0; i<ncols; i++)
       (*cols) [i] = i;
   }
@@ -39,7 +39,7 @@ void print_usage () {
 
 int main (int argc, char *argv[]) {
   int c, cflag = 0, vflag = 0;
-  unsigned int ncols, *cols;
+  size_t ncols, *cols;
   unsigned int retcode;
   char *filename, *command;
   FILE *f_in;
